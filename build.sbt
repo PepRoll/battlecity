@@ -1,5 +1,5 @@
 
-enablePlugins(ScalaJSPlugin)
+enablePlugins(ScalaJSPlugin, WorkbenchSplicePlugin)
 
 organization := "me.peproll"
 
@@ -8,6 +8,18 @@ name := "battlecity"
 version := "1.0"
 
 scalaVersion := "2.12.2"
+
+scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding", "UTF-8",
+    "-feature",
+    "-unchecked",
+    "-Xlint",
+    "-Xfatal-warnings",
+    "-language:higherKinds",
+    "-Yno-adapted-args",
+    "-Ywarn-value-discard"
+)
 
 scalaJSUseMainModuleInitializer := true
 

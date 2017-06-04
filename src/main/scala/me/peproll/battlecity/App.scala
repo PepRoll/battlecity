@@ -6,6 +6,8 @@ import scala.scalajs.js.JSApp
 
 
 object App extends JSApp {
-  override def main(): Unit =
+  override def main(): Unit = {
     Root.component().renderIntoDOM(document.getElementById("root"))
+    ()
+  }
 }
