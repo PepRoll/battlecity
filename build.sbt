@@ -42,6 +42,8 @@ jsDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "com.github.japgolly.scalajs-react" %%% "core" % "1.0.0",
   "com.github.japgolly.scalajs-react" %%% "extra" % "1.0.0",
+  "com.github.japgolly.scalacss" %%% "ext-react" % "0.5.1",
+  "com.github.japgolly.scalacss" %% "core" % "0.5.1",
   "org.scala-js" %%% "scalajs-dom" % "0.9.2",
   "com.lihaoyi" %%% "utest" % "0.4.5" % "test"
 )
