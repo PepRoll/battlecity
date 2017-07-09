@@ -18,17 +18,27 @@ object Render {
 
   implicit val tankRender = new Render[Tank] {
 
-    private val showDirection: Map[MoveDirection, (Int, Int)] = Map(
-      (Up, (0, 0)),
-      (Left, (31, 0)),
-      (Down, (65, 0)),
-      (Right, (95, 0))
+    private val dimension = 25
+
+    private val showDirection: Map[(MoveDirection, TankTrack), (Int, Int)] = Map(
+      ((Up, FirstPosition), (0, 0)),
+      ((Up, SecondPosition), (16, 0)),
+      ((Left, FirstPosition), (32, 0)),
+      ((Left, SecondPosition), (48, 0)),
+      ((Down, FirstPosition), (64, 0)),
+      ((Down, SecondPosition), (80, 0)),
+      ((Right, FirstPosition), (95, 0)),
+      ((Right, SecondPosition), (111, 0))
     )
 
     override def render(tank: Tank, ctx: RenderContext): Unit = {
-      val (xSrcImg, ySrcImg) = showDirection(tank.direction)
+      val (xSrcImg, ySrcImg) = showDirection((tank.direction, tank.track))
       ctx.canvas.drawImage(
-        ctx.sprites, xSrcImg, ySrcImg, 15, 15, (tank.position.x - 35) max 0, (tank.position.y - 35) max 0, 35, 35
+        image = ctx.sprites,
+        offsetX = xSrcImg,
+        offsetY = ySrcImg,
+        width = 15,
+        height = 15, (tank.position.x - dimension) max 0, (tank.position.y - dimension) max 0, dimension, dimension
       )
     }
   }

@@ -8,7 +8,7 @@ object GameContext {
 
   val terrain = Terrain(600, 800)
 
-  val initialState = GameContext(Tank(Coordinates(terrain.width / 2, terrain.height / 2), Up))
+  val initialState = GameContext(Tank(Coordinates(terrain.width / 2, terrain.height / 2), Up, FirstPosition))
 
   def userMove(context: GameContext, direction: MoveDirection): GameContext = {
     val position = context.userTank.position
@@ -19,7 +19,7 @@ object GameContext {
       case Right => Coordinates((position.x + speed.value) min terrain.width, position.y)
       case Left  => Coordinates((position.x - speed.value) max 0, position.y)
     }
-    context.copy(Tank(newPosition, direction))
+    context.copy(Tank(newPosition, direction, context.userTank.track.nextPosition))
   }
 
 }
