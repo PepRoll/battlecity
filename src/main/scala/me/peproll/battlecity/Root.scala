@@ -3,7 +3,7 @@ package me.peproll.battlecity
 import japgolly.scalajs.react.extra.{EventListener, OnUnmount}
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, _}
-import me.peproll.battlecity.model.{Down, Left, MoveDirection, Right, Up}
+import me.peproll.battlecity.model.{Direction, Down, Left, Right, Up}
 import me.peproll.battlecity.view.Render.show
 import me.peproll.battlecity.view.{Image, RenderContext}
 import org.scalajs.dom
@@ -20,7 +20,7 @@ object Root {
 
     def keydown(e: KeyboardEvent): Callback = {
 
-      def changePosition(state: GameContext, moveDirection: MoveDirection): GameContext = {
+      def changePosition(state: GameContext, moveDirection: Direction): GameContext = {
         val ctx = GameContext.userMove(state, moveDirection)
         update(ctx)
         ctx
@@ -56,6 +56,7 @@ object Root {
         ctx.canvas.fillRect(0, 0, 800, 600)
 
         show(state.userTank, ctx)
+        state.walls.foreach(wall => show(wall, ctx))
       }
     }
 

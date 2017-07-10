@@ -16,9 +16,23 @@ object Render {
   def show[T](entity: T, ctx: RenderContext)(implicit r: Render[T]): Unit =
     r.render(entity, ctx)
 
-  implicit val tankRender = new Render[Tank] {
+  implicit val wallRender = new Render[Wall] {
+    override def render(entity: Wall, ctx: RenderContext): Unit = {
+      ctx.canvas.drawImage(
+        image = ctx.sprites,
+        offsetX = 230,
+        offsetY = 70,
+        10,
+        10,
+        canvasOffsetX = entity.position.x,
+        canvasOffsetY = entity.position.y,
+        canvasImageHeight = entity.height,
+        canvasImageWidth = entity.width
+      )
+    }
+  }
 
-    private val dimension = 25
+  implicit val tankRender = new Render[Tank] {
 
     private val showDirection: Map[(MoveDirection, TankTrack), (Int, Int)] = Map(
       ((Up, FirstPosition), (0, 0)),
@@ -38,7 +52,11 @@ object Render {
         offsetX = xSrcImg,
         offsetY = ySrcImg,
         width = 15,
-        height = 15, (tank.position.x - dimension) max 0, (tank.position.y - dimension) max 0, dimension, dimension
+        height = 15,
+        canvasOffsetX = (tank.position.x - tank.dimension) max 0,
+        canvasOffsetY = (tank.position.y - tank.dimension) max 0,
+        canvasImageHeight = tank.dimension,
+        canvasImageWidth = tank.dimension
       )
     }
   }
