@@ -8,11 +8,13 @@ object Settings {
   val size: Int = SettingsJS.size
   val gameWidth: Int = size * 16
   val gameHeight: Int = size * 14
+
+  @js.native
+  @JSGlobal("settings")
+  private object SettingsJS extends js.Any {
+    def size: Int = js.native
+    def sprites: js.Array[String] = js.native
+  }
 }
 
-@js.native
-@JSGlobal("settings")
-object SettingsJS extends js.Any {
-  def size: Int = js.native
-  def sprites: js.Array[String] = js.native
-}
+
