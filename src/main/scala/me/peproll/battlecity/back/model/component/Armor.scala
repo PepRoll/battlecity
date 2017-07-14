@@ -1,4 +1,4 @@
-package me.peproll.battlecity.model.component
+package me.peproll.battlecity.back.model.component
 
 trait ArmorComponent {
   def armor: Armor

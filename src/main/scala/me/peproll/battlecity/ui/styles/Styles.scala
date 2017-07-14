@@ -1,4 +1,4 @@
-package me.peproll.battlecity.styles
+package me.peproll.battlecity.ui.styles
 
 import scalacss.Defaults._
 

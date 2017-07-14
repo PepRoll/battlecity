@@ -1,16 +1,18 @@
-package me.peproll.battlecity.model
+package me.peproll.battlecity.back.model
 
-import me.peproll.battlecity.model.component.TransitionComponent
+import me.peproll.battlecity.back.model.component.Transition
 
 trait Entity {
   def position: Coordinates
 }
 
-case class Coordinates(x: Int, y: Int)
+case class Coordinates(x: Int, y: Int) {
+  def tuple: (Int, Int) = (x, y)
+}
 case class Time(seconds: Int)
 
 abstract class Block extends Entity
-  with TransitionComponent
+  with Transition
 
 case class Wall(position: Coordinates) extends Block {
   override def transition: Boolean = false

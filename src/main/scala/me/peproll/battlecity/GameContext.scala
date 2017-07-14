@@ -1,32 +1,34 @@
 package me.peproll.battlecity
 
-import me.peproll.battlecity.model._
+import me.peproll.battlecity.back.model._
 
-case class GameContext(userTank: Tank,
-                       walls: Seq[Wall])
+final class GameContext(val userTank: PlayerTank) {
+
+  def userMove(direction: Direction): GameContext = {
+    val (x, y) = userTank.position.tuple
+    val speed = userTank.rank.speed
+    val newPosition = direction match {
+      case Up    => Coordinates(x, (y - speed.value) max 0)
+      case Down  => Coordinates(x, (y + speed.value) min Settings.gameHeight)
+      case Right => Coordinates((x + speed.value) min Settings.gameWidth, y)
+      case Left  => Coordinates((x - speed.value) max 0, y)
+    }
+    new GameContext(userTank.copy(position = newPosition, direction = direction, userTank.tankTrack.next))
+  }
+
+}
 
 object GameContext {
 
-  val terrain = Terrain(600, 800)
-
-  val initialState = GameContext(
-    Tank(Coordinates(terrain.width / 2, terrain.height / 2), Up, FirstPosition),
-    Seq(
-      Wall(Coordinates(10, 10)),
-      Wall(Coordinates(20, 20))
-    )
+  def initialState: GameContext = GameContext(
+    PlayerTank(
+      position = Coordinates(Settings.gameWidth / 2, Settings.gameHeight / 2),
+      direction = Up,
+      tankTrack = FirstPosition,
+      shield = false,
+      rank = Solder)
   )
 
-  def userMove(context: GameContext, direction: Direction): GameContext = {
-    val position = context.userTank.position
-    val speed = context.userTank.speed
-    val newPosition = direction match {
-      case Up    => Coordinates(position.x, (position.y - speed.value) max 0)
-      case Down  => Coordinates(position.x, (position.y + speed.value) min Constants.height)
-      case Right => Coordinates((position.x + speed.value) min terrain.width, position.y)
-      case Left  => Coordinates((position.x - speed.value) max 0, position.y)
-    }
-    context.copy(Tank(newPosition, direction, context.userTank.track.nextPosition))
-  }
+  def apply(userTank: PlayerTank): GameContext = new GameContext(userTank)
 
 }

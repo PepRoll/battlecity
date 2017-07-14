@@ -1,5 +1,6 @@
 package me.peproll.battlecity
 
+import me.peproll.battlecity.ui.RootUI
 import org.scalajs.dom.document
 
 import scala.scalajs.js.JSApp
@@ -7,7 +8,7 @@ import scala.scalajs.js.JSApp
 
 object App extends JSApp {
   override def main(): Unit = {
-    Root.component().renderIntoDOM(document.getElementById("root"))
+    RootUI.component().renderIntoDOM(document.getElementById("root"))
     ()
   }
 }

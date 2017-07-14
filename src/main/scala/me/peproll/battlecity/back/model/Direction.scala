@@ -1,4 +1,4 @@
-package me.peproll.battlecity.model
+package me.peproll.battlecity.back.model
 
 trait WithDirection {
   def direction: Direction

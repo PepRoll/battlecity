@@ -1,8 +1,8 @@
-package me.peproll.battlecity.model
+package me.peproll.battlecity.back.model
 
-import me.peproll.battlecity.model.component._
+import me.peproll.battlecity.back.model.component._
 
-sealed trait Tank extends Entity {
+trait Tank extends Entity {
   def tankTrack: TankTrack
 }
 
@@ -75,13 +75,13 @@ case object PowerType extends EnemyType {
 }
 
 sealed trait TankTrack {
-  def nextPosition: TankTrack
+  def next: TankTrack
 }
 
 case object FirstPosition extends TankTrack {
-  override def nextPosition: TankTrack = SecondPosition
+  override def next: TankTrack = SecondPosition
 }
 
 case object SecondPosition extends TankTrack {
-  override def nextPosition: TankTrack = FirstPosition
+  override def next: TankTrack = FirstPosition
 }
