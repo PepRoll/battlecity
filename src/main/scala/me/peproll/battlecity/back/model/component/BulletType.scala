@@ -1,7 +1,7 @@
 package me.peproll.battlecity.back.model.component
 
 trait BulletComponent {
-  def bullet: Bullet
+  def bullet: BulletType
   def bulletCount: Int
 }
 
@@ -9,26 +9,26 @@ sealed trait Power
 case object MediumPower extends Power
 case object HighPower extends Power
 
-sealed trait Bullet extends SpeedComponent {
+sealed trait BulletType extends SpeedComponent {
   def power: Power
 }
 
-case object FastHighBullet extends Bullet {
+case object FastHighBulletType extends BulletType {
   override def speed: Speed = HighSpeed
   override def power: Power = HighPower
 }
 
-case object LowHighBullet extends Bullet {
+case object LowHighBulletType extends BulletType {
   override def speed: Speed = LowSpeed
   override def power: Power = HighPower
 }
 
-case object LowMediumBullet extends Bullet {
+case object LowMediumBulletType extends BulletType {
   override def speed: Speed = LowSpeed
   override def power: Power = HighPower
 }
 
-case object FastMediumBullet extends Bullet {
+case object FastMediumBulletType extends BulletType {
   override def speed: Speed = HighSpeed
   override def power: Power = MediumPower
 }

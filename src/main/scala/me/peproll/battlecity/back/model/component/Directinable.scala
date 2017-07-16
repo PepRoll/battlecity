@@ -1,6 +1,6 @@
-package me.peproll.battlecity.back.model
+package me.peproll.battlecity.back.model.component
 
-trait WithDirection {
+trait Directinable {
   def direction: Direction
 }
 

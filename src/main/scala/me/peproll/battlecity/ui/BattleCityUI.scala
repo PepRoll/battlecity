@@ -4,7 +4,7 @@ import japgolly.scalajs.react.extra.{EventListener, OnUnmount}
 import japgolly.scalajs.react.vdom.TagOf
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, _}
-import me.peproll.battlecity.back.model.{Direction, Down, Left, Right, Up}
+import me.peproll.battlecity.back.model.component._
 import me.peproll.battlecity.render.Render
 import me.peproll.battlecity.render.Render.RenderContext
 import me.peproll.battlecity.{GameContext, Settings}
@@ -34,6 +34,8 @@ object BattleCityUI {
         case KeyCode.Down => scope.modState(changePosition(Down))
         case KeyCode.Right => scope.modState(changePosition(Right))
         case KeyCode.Left => scope.modState(changePosition(Left))
+        case KeyCode.Space =>
+          scope.modState(ctx => ctx.copy(gameContext = ctx.gameContext.fire(ctx.gameContext.userTank)))
         case _ => Callback.empty
       }
     }

@@ -1,7 +1,7 @@
 package me.peproll.battlecity.render
 
 import me.peproll.battlecity.back.model._
-import me.peproll.battlecity.back.model.component.Damagable
+import me.peproll.battlecity.back.model.component._
 import me.peproll.battlecity.render.Render.RenderContext
 import me.peproll.battlecity.{GameContext, Settings}
 import org.scalajs.dom.CanvasRenderingContext2D
@@ -18,6 +18,12 @@ object Render {
   def apply[E](entity: E, ctx: RenderContext)(implicit r: Render[E]): Unit =
     r.render(entity, ctx)
 
+  implicit val bulletRender = new Render[Bullet] {
+    override def render(entity: Bullet, ctx: RenderContext): Unit = {
+      val direction = directionFileName(entity.direction)
+      drawImage(s"bullet_$direction", entity.position, ctx)
+    }
+  }
 
   implicit val brickRender = new Render[WallBrick] {
     private val size = Settings.size / 2
@@ -61,13 +67,6 @@ object Render {
 
     private val prefix: String = "tank_player1"
 
-    def direction(d: Direction): String = d match {
-      case Up => "up"
-      case Down => "down"
-      case Left => "left"
-      case Right => "right"
-    }
-
     def tankTrack(t: TankTrack): String = t match {
       case FirstPosition => "t1"
       case SecondPosition => "t2"
@@ -76,7 +75,7 @@ object Render {
     override def render(tank: PlayerTank, ctx: RenderContext): Unit = {
       val name = Seq(
         prefix,
-        direction(tank.direction),
+        directionFileName(tank.direction),
         "c0",
         tankTrack(tank.tankTrack)
       ).mkString("_")
@@ -92,7 +91,15 @@ object Render {
 
       Render(gameContext.userTank, ctx)
       Render(gameContext.gameObstacles, ctx)
+      gameContext.bullets.foreach(f => Render(f, ctx))
     }
+  }
+
+  def directionFileName(d: Direction): String = d match {
+    case Up => "up"
+    case Down => "down"
+    case Left => "left"
+    case Right => "right"
   }
 
   private def damagableRender[E <: Entity with Damagable](entity: E, offset: Int, action: Coordinates => Unit): Unit = {
