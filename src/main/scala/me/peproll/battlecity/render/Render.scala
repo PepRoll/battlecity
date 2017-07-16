@@ -1,8 +1,8 @@
 package me.peproll.battlecity.render
 
-import me.peproll.battlecity.Settings
 import me.peproll.battlecity.back.model._
 import me.peproll.battlecity.render.Render.RenderContext
+import me.peproll.battlecity.{GameContext, Settings}
 import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalajs.dom.raw.HTMLImageElement
 
@@ -16,6 +16,14 @@ object Render {
 
   def apply[E](entity: E, ctx: RenderContext)(implicit r: Render[E]): Unit =
     r.render(entity, ctx)
+
+  implicit val treesRender = new Render[Forest] {
+
+    private val name = "trees"
+
+    override def render(entity: Forest, ctx: RenderContext): Unit =
+      drawImage(name, entity.position, ctx)
+  }
 
   implicit val playerTankRender = new Render[PlayerTank] {
 
@@ -42,6 +50,17 @@ object Render {
       ).mkString("_")
 
       drawImage(name, tank.position, ctx)
+    }
+  }
+
+  implicit val gameContextRender = new Render[GameContext] {
+    override def render(gameContext: GameContext, ctx: RenderContext): Unit = {
+      ctx.canvas.fillStyle = "rgb(0, 0, 0)"
+      ctx.canvas.fillRect(0, 0, 800, 600)
+
+      Render(gameContext.userTank, ctx)
+      gameContext.forests.foreach(f => Render(f, ctx))
+
     }
   }
 

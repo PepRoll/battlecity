@@ -40,10 +40,7 @@ object BattleCityUI {
 
     def update(state: State): Unit = {
       state.renderContext.foreach { ctx =>
-        ctx.canvas.fillStyle = "rgb(0, 0, 0)"
-        ctx.canvas.fillRect(0, 0, 800, 600)
-
-        Render(state.gameContext.userTank, ctx)
+        Render(state.gameContext, ctx)
       }
     }
 

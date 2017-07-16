@@ -2,7 +2,8 @@ package me.peproll.battlecity
 
 import me.peproll.battlecity.back.model._
 
-final class GameContext(val userTank: PlayerTank) {
+final case class GameContext(userTank: PlayerTank,
+                             forests: List[Forest]) {
 
   def userMove(direction: Direction): GameContext = {
     val (x, y) = userTank.position.tuple
@@ -13,7 +14,7 @@ final class GameContext(val userTank: PlayerTank) {
       case Right => Coordinates((x + speed.value) min Settings.gameWidth, y)
       case Left  => Coordinates((x - speed.value) max 0, y)
     }
-    new GameContext(userTank.copy(position = newPosition, direction = direction, userTank.tankTrack.next))
+    this.copy(userTank.copy(position = newPosition, direction = direction, userTank.tankTrack.next))
   }
 
 }
@@ -26,9 +27,10 @@ object GameContext {
       direction = Up,
       tankTrack = FirstPosition,
       shield = false,
-      rank = Solder)
+      rank = Solder),
+    List(
+      Forest(position = Coordinates(20, 20))
+    )
   )
-
-  def apply(userTank: PlayerTank): GameContext = new GameContext(userTank)
 
 }
