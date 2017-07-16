@@ -1,9 +1,10 @@
 package me.peproll.battlecity.render
 
+import me.peproll.battlecity.Settings
+import me.peproll.battlecity.back.GameState
 import me.peproll.battlecity.back.model._
 import me.peproll.battlecity.back.model.component._
 import me.peproll.battlecity.render.Render.RenderContext
-import me.peproll.battlecity.{GameContext, Settings}
 import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalajs.dom.raw.HTMLImageElement
 
@@ -13,7 +14,8 @@ trait Render[-E] {
 
 object Render {
 
-  class RenderContext(val canvas: CanvasRenderingContext2D, val sprites: Map[String, HTMLImageElement])
+  case class RenderContext(canvas: Option[CanvasRenderingContext2D],
+                           sprites: Map[String, HTMLImageElement])
 
   def apply[E](entity: E, ctx: RenderContext)(implicit r: Render[E]): Unit =
     r.render(entity, ctx)
@@ -84,10 +86,12 @@ object Render {
     }
   }
 
-  implicit val gameContextRender = new Render[GameContext] {
-    override def render(gameContext: GameContext, ctx: RenderContext): Unit = {
-      ctx.canvas.fillStyle = backgroundColor
-      ctx.canvas.fillRect(0, 0, 800, 600)
+  implicit val gameContextRender = new Render[GameState] {
+    override def render(gameContext: GameState, ctx: RenderContext): Unit = {
+      ctx.canvas.foreach(c => {
+       c.fillStyle = backgroundColor
+       c.fillRect(0, 0, 800, 600)
+      })
 
       Render(gameContext.userTank, ctx)
       Render(gameContext.gameObstacles, ctx)
@@ -129,7 +133,7 @@ object Render {
                         size: Int = Settings.size): Unit = {
     val image = ctx.sprites(s"$imageName.png")
 
-    ctx.canvas.drawImage(
+    ctx.canvas.foreach(_.drawImage(
       image = image,
       offsetX = 0,
       offsetY = 0,
@@ -139,6 +143,7 @@ object Render {
       canvasOffsetY = coord.y max 0 min (Settings.gameHeight - size),
       canvasImageHeight = size,
       canvasImageWidth = size)
+    )
   }
 
   private val backgroundColor = "rgb(0, 0, 0)"

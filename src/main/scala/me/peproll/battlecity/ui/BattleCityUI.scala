@@ -1,78 +1,95 @@
 package me.peproll.battlecity.ui
 
-import japgolly.scalajs.react.extra.{EventListener, OnUnmount}
+import japgolly.scalajs.react.extra.{EventListener, Listenable, OnUnmount}
 import japgolly.scalajs.react.vdom.TagOf
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, _}
+import me.peproll.battlecity.Settings
 import me.peproll.battlecity.back.model.component._
+import me.peproll.battlecity.back.{GameBroadcast, GameManager, GameState, ResourceManager}
 import me.peproll.battlecity.render.Render
 import me.peproll.battlecity.render.Render.RenderContext
-import me.peproll.battlecity.{GameContext, Settings}
+import me.peproll.battlecity.ui.BattleCityUI.State.{Game, Loading}
+import monocle.macros.{GenLens, GenPrism}
 import org.scalajs.dom
 import org.scalajs.dom.KeyboardEvent
 import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.raw.{CanvasRenderingContext2D, HTMLImageElement}
+import org.scalajs.dom.raw.{CanvasRenderingContext2D, HTMLElement}
+
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 object BattleCityUI {
 
-  case class State(gameContext: GameContext, renderContext: Option[RenderContext])
-  class Props(val sprites: Map[String, HTMLImageElement])
+  sealed trait State
+  object State {
+    case object Loading extends State
+    case class Game(gameContext: GameState, renderContext: RenderContext) extends State
 
-  private val inititalState: State = State(GameContext.initialState, None)
+    val gameContextLens = GenPrism[State, Game] composeLens GenLens[Game](_.gameContext)
+    val canvasLens = GenPrism[State, Game] composeLens GenLens[Game](_.renderContext) composeLens GenLens[RenderContext](_.canvas)
+  }
 
-  class Backend(scope: BackendScope[Props, State]) extends OnUnmount {
+  private val inititalState: State = Loading
 
-    def keydown(e: KeyboardEvent): Callback = {
+  class Backend(scope: BackendScope[Unit, State]) extends OnUnmount {
 
+    def keyDown(e: KeyboardEvent): Callback = {
 
-      def changePosition(direction: Direction)(state: State): State =
-        state.copy(gameContext = state.gameContext.userMove(direction))
+      def changePosition(direction: Direction): Callback =
+        GameManager.playerMove(direction)
 
       e.keyCode match {
-        case KeyCode.Up => scope.modState(changePosition(Up))
-        case KeyCode.Down => scope.modState(changePosition(Down))
-        case KeyCode.Right => scope.modState(changePosition(Right))
-        case KeyCode.Left => scope.modState(changePosition(Left))
-        case KeyCode.Space =>
-          scope.modState(ctx => ctx.copy(gameContext = ctx.gameContext.fire(ctx.gameContext.userTank)))
+        case KeyCode.Up    => changePosition(Up)
+        case KeyCode.Down  => changePosition(Down)
+        case KeyCode.Right => changePosition(Right)
+        case KeyCode.Left  => changePosition(Left)
+        case KeyCode.Space => GameManager.playerFire
         case _ => Callback.empty
       }
     }
 
-    def update(state: State): Unit = {
-      state.renderContext.foreach { ctx =>
-        Render(state.gameContext, ctx)
-      }
+    def update(state: State): Unit = state match {
+      case Game(gameContext, renderContext) => Render(gameContext, renderContext)
+      case _ =>
     }
 
-    def render(props: Props, state: State): TagOf[Canvas] = {
-      <.canvas()
+
+    def render(props: Unit, state: State): TagOf[HTMLElement] = {
+      state match {
+        case Loading => <.div("Loading...")
+        case _: Game => <.canvas()
+      }
     }
   }
 
-  private val component = ScalaComponent.builder[Props]("Battle city")
+  val component = ScalaComponent.builder[Unit]("Battle city")
     .initialState(inititalState)
     .renderBackend[Backend]
-    .componentDidMount(scope => {
-      val canvas = scope.getDOMNode.asInstanceOf[Canvas]
-      canvas.height = Settings.gameHeight
-      canvas.width = Settings.gameWidth
-      val renderContext = new RenderContext(
-        canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D],
-        scope.props.sprites
+    .componentDidMount(scope => Callback.future {
+      ResourceManager.initImages.map(sprites => scope.setState(
+        Game(GameManager.game, RenderContext(canvas = None, sprites)))
       )
-      scope.modState(_.copy(renderContext = Some(renderContext)))
+    })
+    .componentDidUpdate(scope => scope.currentState match {
+      case Game(_, RenderContext(None, _)) =>
+        val canvas = scope.getDOMNode.asInstanceOf[Canvas]
+        canvas.height = Settings.gameHeight
+        canvas.width = Settings.gameWidth
+        scope.modState(State.canvasLens.set(Some(
+          canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]))
+        )
+      case _ => Callback.empty
     })
     .componentWillUpdate($ => Callback($.backend.update($.nextState)))
     .configure(EventListener[dom.KeyboardEvent].install(
       "keydown",
-      $ => e => $.backend.keydown(e),
+      $ => e => $.backend.keyDown(e),
       _ => dom.window)
     )
+    .configure(Listenable.listen(
+      listenable = _ => GameBroadcast,
+      makeListener = $ => (game: GameState) => $.modState(State.gameContextLens.set(game))))
     .build
-
-  def apply(sprites: Map[String, HTMLImageElement]) =
-    component.withKey("root")(new Props(sprites))
 
 }

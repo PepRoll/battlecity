@@ -1,43 +1,51 @@
-package me.peproll.battlecity
+package me.peproll.battlecity.back
 
+import japgolly.scalajs.react.Callback
+import me.peproll.battlecity.Settings
 import me.peproll.battlecity.back.model._
 import me.peproll.battlecity.back.model.component._
 
-final case class GameContext(userTank: PlayerTank,
-                             bullets: List[Bullet],
-                             gameObstacles: List[Block]) {
+final case class GameState(userTank: PlayerTank,
+                           bullets: List[Bullet],
+                           gameObstacles: List[Block])
 
-  def userMove(direction: Direction): GameContext = {
-    val (x, y) = userTank.position.tuple
-    val speed = userTank.rank.speed
+object GameManager {
+
+  private var gameState: GameState = initialState
+
+  def game: GameState = gameState
+
+  def playerMove(direction: Direction): Callback = {
+    val tank = game.userTank
+    val (x, y) = tank.position.tuple
+    val speed = tank.rank.speed
     val newPosition = direction match {
       case Up    => Coordinates(x, (y - speed.value) max 0)
       case Down  => Coordinates(x, (y + speed.value) min Settings.gameHeight)
       case Right => Coordinates((x + speed.value) min Settings.gameWidth, y)
       case Left  => Coordinates((x - speed.value) max 0, y)
     }
-    this.copy(userTank.copy(position = newPosition, direction = direction, userTank.tankTrack.next))
+    gameState =
+      game.copy(game.userTank.copy(position = newPosition, direction = direction, game.userTank.tankTrack.next))
+    GameBroadcast.change(gameState)
   }
 
-  def fire(tank: Tank): GameContext = {
-    val (x, y) = tank.position.tuple
+  def playerFire: Callback = {
+    val (x, y) = game.userTank.position.tuple
     val tankAdjustment = 6
     val offset = 12
-    val position = tank.direction match {
+    val position = game.userTank.direction match {
       case Up => Coordinates(x + offset, y - tankAdjustment)
       case Down => Coordinates(x + offset, y + Settings.size)
       case Left => Coordinates(x - tankAdjustment, y + offset)
       case Right => Coordinates(x + Settings.size, y + offset)
     }
-    val bullet = Bullet(position, tank.direction, tank.bullet)
-    this.copy(bullets = this.bullets :+ bullet)
+    val bullet = Bullet(position, game.userTank.direction, game.userTank.bullet)
+    gameState = game.copy(bullets = game.bullets :+ bullet)
+    GameBroadcast.change(gameState)
   }
 
-}
-
-object GameContext {
-
-  def initialState: GameContext = GameContext(
+  private def initialState: GameState = GameState(
     userTank = PlayerTank(
       position = Coordinates(Settings.gameWidth / 2, Settings.gameHeight / 2),
       direction = Up,
