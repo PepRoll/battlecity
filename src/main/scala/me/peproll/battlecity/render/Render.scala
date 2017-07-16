@@ -1,6 +1,7 @@
 package me.peproll.battlecity.render
 
 import me.peproll.battlecity.back.model._
+import me.peproll.battlecity.back.model.component.Damagable
 import me.peproll.battlecity.render.Render.RenderContext
 import me.peproll.battlecity.{GameContext, Settings}
 import org.scalajs.dom.CanvasRenderingContext2D
@@ -17,12 +18,32 @@ object Render {
   def apply[E](entity: E, ctx: RenderContext)(implicit r: Render[E]): Unit =
     r.render(entity, ctx)
 
+
+  implicit val brickRender = new Render[WallBrick] {
+    private val size = Settings.size / 2
+
+    override def render(entity: WallBrick, ctx: RenderContext): Unit = {
+      damagableRender(entity, size, position => drawImage("wall_brick", position, ctx, size))
+    }
+  }
+
+  implicit val steelRender = new Render[WallSteel] {
+    private val size = Settings.size / 2
+
+    override def render(entity: WallSteel, ctx: RenderContext): Unit = {
+      damagableRender(entity, size, position => drawImage("wall_steel", position, ctx, size))
+    }
+  }
+
+  implicit val waterRender = new Render[Water] {
+    override def render(entity: Water, ctx: RenderContext): Unit = {
+      drawImage("water_1", entity.position, ctx)
+    }
+  }
+
   implicit val treesRender = new Render[Forest] {
-
-    private val name = "trees"
-
     override def render(entity: Forest, ctx: RenderContext): Unit =
-      drawImage(name, entity.position, ctx)
+      drawImage("forest", entity.position, ctx)
   }
 
   implicit val playerTankRender = new Render[PlayerTank] {
@@ -55,30 +76,57 @@ object Render {
 
   implicit val gameContextRender = new Render[GameContext] {
     override def render(gameContext: GameContext, ctx: RenderContext): Unit = {
-      ctx.canvas.fillStyle = "rgb(0, 0, 0)"
+      ctx.canvas.fillStyle = backgroundColor
       ctx.canvas.fillRect(0, 0, 800, 600)
 
       Render(gameContext.userTank, ctx)
       gameContext.forests.foreach(f => Render(f, ctx))
+      gameContext.brickWalls.foreach(f => Render(f, ctx))
+      gameContext.steelWalls.foreach(f => Render(f, ctx))
+      gameContext.waterFields.foreach(f => Render(f, ctx))
 
+    }
+  }
+
+  private def damagableRender[E <: Entity with Damagable](entity: E, offset: Int, action: Coordinates => Unit): Unit = {
+    val damage = entity.damage
+    val position = entity.position
+
+    if(!damage.leftTop) {
+      action(position)
+    }
+
+    if(!damage.rightTop) {
+      action(position.copy(x = position.x + offset))
+    }
+
+    if(!damage.leftBottom) {
+      action(position.copy(y = position.y + offset))
+    }
+
+    if(!damage.rightBottom) {
+      action(position.copy(x = position.x + offset, y = position.y + offset))
     }
   }
 
   private def drawImage(imageName: String,
                         coord: Coordinates,
-                        ctx: RenderContext): Unit = {
+                        ctx: RenderContext,
+                        size: Int = Settings.size): Unit = {
     val image = ctx.sprites(s"$imageName.png")
 
     ctx.canvas.drawImage(
       image = image,
       offsetX = 0,
       offsetY = 0,
-      width = Settings.size,
-      height = Settings.size,
-      canvasOffsetX = (coord.x - Settings.size) max 0,
-      canvasOffsetY = (coord.y - Settings.size) max 0,
-      canvasImageHeight = Settings.size,
-      canvasImageWidth = Settings.size)
+      width = size,
+      height = size,
+      canvasOffsetX = coord.x max 0 min (Settings.gameWidth - size),
+      canvasOffsetY = coord.y max 0 min (Settings.gameHeight - size),
+      canvasImageHeight = size,
+      canvasImageWidth = size)
   }
+
+  private val backgroundColor = "rgb(0, 0, 0)"
 
 }

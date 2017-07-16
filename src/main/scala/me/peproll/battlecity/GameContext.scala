@@ -1,9 +1,13 @@
 package me.peproll.battlecity
 
 import me.peproll.battlecity.back.model._
+import me.peproll.battlecity.back.model.component.Damage
 
 final case class GameContext(userTank: PlayerTank,
-                             forests: List[Forest]) {
+                             forests: List[Forest],
+                             steelWalls: List[WallSteel],
+                             brickWalls: List[WallBrick],
+                             waterFields: List[Water]) {
 
   def userMove(direction: Direction): GameContext = {
     val (x, y) = userTank.position.tuple
@@ -22,14 +26,23 @@ final case class GameContext(userTank: PlayerTank,
 object GameContext {
 
   def initialState: GameContext = GameContext(
-    PlayerTank(
+    userTank = PlayerTank(
       position = Coordinates(Settings.gameWidth / 2, Settings.gameHeight / 2),
       direction = Up,
       tankTrack = FirstPosition,
       shield = false,
       rank = Solder),
-    List(
-      Forest(position = Coordinates(20, 20))
+    forests = List(
+      Forest(position = Coordinates(0, 0))
+    ),
+    steelWalls = List(
+      WallSteel(position = Coordinates(Settings.size, 0), damage = Damage(true, false, false, false))
+    ),
+    brickWalls = List(
+      WallBrick(position = Coordinates(Settings.size * 2, 0), damage = Damage(false, false, true, false))
+    ),
+    waterFields = List(
+      Water(position = Coordinates(Settings.size * 3, 0))
     )
   )
 

@@ -160,7 +160,7 @@ window.settings = {
     "tank_power_up_c0_t1_f.png",
     "tank_power_up_c0_t2.png",
     "tank_power_up_c0_t2_f.png",
-    "trees.png",
+    "forest.png",
     "wall_brick.png",
     "wall_steel.png",
     "water_1.png",
