@@ -46,6 +46,17 @@ object Render {
       drawImage("forest", entity.position, ctx)
   }
 
+  implicit val blocksRender = new Render[List[Block]] {
+    override def render(entity: List[Block], ctx: RenderContext): Unit = {
+      entity.foreach({
+       case forest: Forest    => Render(forest, ctx)
+       case water:  Water     => Render(water, ctx)
+       case forest: WallBrick => Render(forest, ctx)
+       case forest: WallSteel => Render(forest, ctx)
+      })
+    }
+  }
+
   implicit val playerTankRender = new Render[PlayerTank] {
 
     private val prefix: String = "tank_player1"
@@ -80,11 +91,7 @@ object Render {
       ctx.canvas.fillRect(0, 0, 800, 600)
 
       Render(gameContext.userTank, ctx)
-      gameContext.forests.foreach(f => Render(f, ctx))
-      gameContext.brickWalls.foreach(f => Render(f, ctx))
-      gameContext.steelWalls.foreach(f => Render(f, ctx))
-      gameContext.waterFields.foreach(f => Render(f, ctx))
-
+      Render(gameContext.gameObstacles, ctx)
     }
   }
 
