@@ -9,19 +9,17 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 object RootUI {
 
   sealed trait State
-  case class Loading(percent: Int) extends State
-  case class OpenGame(sprites: Map[String, HTMLImageElement]) extends State
+  case object Loading extends State
+  case class Game(sprites: Map[String, HTMLImageElement]) extends State
 
   val component = ScalaComponent.builder[Unit]("LoadResourcesUI")
-    .initialState[State](Loading(0))
+    .initialState[State](Loading)
     .render_S {
-      case Loading(percent) => <.div(s"state images - $percent")
-      case OpenGame(sprites) => BattleCityUI(sprites).vdomElement
+      case Loading => <.div(s"Loading...")
+      case Game(sprites) => BattleCityUI(sprites).vdomElement
     }
     .componentDidMount($ => Callback.future {
-      ResourceManager.initImages.run { next =>
-        $.setState(Loading(next)).toFuture
-      }.map(sprites => $.setState(OpenGame(sprites)))
+      ResourceManager.initImages.map(sprites => $.setState(Game(sprites)))
     })
     .build
 
