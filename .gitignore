@@ -1,5 +1,7 @@
 target
-.idea
-project/target
-client/target
-client/client.iml
+.idea/
+project/target/
+client/target/
+client/*.iml
+server/target/
+server/*.iml

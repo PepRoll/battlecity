@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="SBT 1" modules="battlecity">
+    <profile name="SBT 1" modules="client">
       <option name="higherKinds" value="true" />
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />
@@ -15,8 +15,22 @@
         <parameter value="-Ywarn-value-discard" />
       </parameters>
       <plugins>
-        <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.12.2/jars/scalajs-compiler_2.12.2-0.6.17.jar" />
+        <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.12.3/jars/scalajs-compiler_2.12.3-0.6.18.jar" />
       </plugins>
+    </profile>
+    <profile name="SBT 2" modules="root">
+      <option name="higherKinds" value="true" />
+      <option name="deprecationWarnings" value="true" />
+      <option name="uncheckedWarnings" value="true" />
+      <option name="featureWarnings" value="true" />
+      <parameters>
+        <parameter value="-encoding" />
+        <parameter value="UTF-8" />
+        <parameter value="-Xlint" />
+        <parameter value="-Xfatal-warnings" />
+        <parameter value="-Yno-adapted-args" />
+        <parameter value="-Ywarn-value-discard" />
+      </parameters>
     </profile>
   </component>
 </project>
