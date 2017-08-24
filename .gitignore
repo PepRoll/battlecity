@@ -5,3 +5,7 @@ client/target/
 client/*.iml
 server/target/
 server/*.iml
+shared/*.iml
+shared/target/
+shared/.js/
+shared/.jvm/

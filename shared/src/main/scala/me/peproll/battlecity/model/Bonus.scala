@@ -1,4 +1,4 @@
-package me.peproll.battlecity.back.model
+package me.peproll.battlecity.model
 
 sealed trait Bonus
 // 10 seconds

@@ -1,4 +1,4 @@
-package me.peproll.battlecity.back.model.component
+package me.peproll.battlecity.model.component
 
 trait SpeedComponent {
   def speed: Speed

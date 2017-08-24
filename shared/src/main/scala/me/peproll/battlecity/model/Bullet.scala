@@ -1,6 +1,6 @@
-package me.peproll.battlecity.back.model
+package me.peproll.battlecity.model
 
-import me.peproll.battlecity.back.model.component.{BulletType, Direction}
+import me.peproll.battlecity.model.component.{BulletType, Direction}
 
 case class Bullet(position: Coordinates,
                   direction: Direction,

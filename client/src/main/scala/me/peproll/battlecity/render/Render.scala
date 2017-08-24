@@ -2,8 +2,8 @@ package me.peproll.battlecity.render
 
 import me.peproll.battlecity.Settings
 import me.peproll.battlecity.back.GameState
-import me.peproll.battlecity.back.model._
-import me.peproll.battlecity.back.model.component._
+import me.peproll.battlecity.model._
+import me.peproll.battlecity.model.component._
 import me.peproll.battlecity.render.Render.RenderContext
 import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalajs.dom.raw.HTMLImageElement

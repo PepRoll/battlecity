@@ -5,7 +5,7 @@ import japgolly.scalajs.react.vdom.TagOf
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, _}
 import me.peproll.battlecity.Settings
-import me.peproll.battlecity.back.model.component._
+import me.peproll.battlecity.model.component._
 import me.peproll.battlecity.back.{GameBroadcast, GameManager, GameState, ResourceManager}
 import me.peproll.battlecity.render.Render
 import me.peproll.battlecity.render.Render.RenderContext

@@ -1,6 +1,6 @@
-package me.peproll.battlecity.back.model
+package me.peproll.battlecity.model
 
-import me.peproll.battlecity.back.model.component._
+import me.peproll.battlecity.model.component._
 
 trait Tank extends Entity
   with Directinable

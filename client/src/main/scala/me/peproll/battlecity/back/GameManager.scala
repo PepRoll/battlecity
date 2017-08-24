@@ -2,8 +2,8 @@ package me.peproll.battlecity.back
 
 import japgolly.scalajs.react.Callback
 import me.peproll.battlecity.Settings
-import me.peproll.battlecity.back.model._
-import me.peproll.battlecity.back.model.component._
+import me.peproll.battlecity.model._
+import me.peproll.battlecity.model.component._
 
 final case class GameState(userTank: PlayerTank,
                            bullets: List[Bullet],

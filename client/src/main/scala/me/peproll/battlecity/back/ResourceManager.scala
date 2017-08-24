@@ -14,7 +14,7 @@ trait IResourceManager {
 object ResourceManager extends IResourceManager {
 
   override def initImages: Future[Map[String, HTMLImageElement]] = {
-    val rootResources: String = "/src/main/resources/sprites/"
+    val rootResources: String = "/web/sprites/"
 
     Future.traverse(Settings.sprites){ sprite =>
       loadImage(rootResources + sprite).map(image => sprite -> image)
